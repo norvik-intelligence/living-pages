@@ -1,12 +1,20 @@
 import Link from "next/link";
 import { Logo } from "@/components/logo";
+import { SignupForm } from "@/components/signup-form";
+
+const messages: Record<string, string> = {
+  "not-configured": "Account creation is not configured yet.",
+  "invalid-details": "Use a valid email and a password with at least 8 characters.",
+  "rate-limited": "Your confirmation email was already sent. Check your inbox and spam folder, then wait 60 seconds before trying again.",
+  "account-failed": "We could not create the account. Try again in a moment or log in if you already registered.",
+};
 export default async function Signup({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   const query = await searchParams;
   return (
     <main id="content" className="auth-page">
       <aside className="auth-aside">
         <Logo />
-        <div>
+        <div className="auth-panel">
           <p className="auth-quote">
             Build the site once. Keep the business moving.
           </p>
@@ -17,48 +25,14 @@ export default async function Signup({ searchParams }: { searchParams: Promise<{
         <span className="eyebrow">Your system starts here</span>
       </aside>
       <section className="auth-main">
-        <form className="auth-form" action="/api/auth/signup" method="post">
-          <span className="eyebrow">Create workspace</span>
-          <h1>Start free</h1>
-          <p className="muted">
-            One account. One governed workspace. No credit card required.
-          </p>
-          {query.error && <p className="auth-message error" role="alert">{query.error === "not-configured" ? "Account creation is not configured yet." : "Check your details and try again."}</p>}
-          <div className="field">
-            <label htmlFor="name">Full name</label>
-            <input id="name" name="name" autoComplete="name" required />
-          </div>
-          <div className="field">
-            <label htmlFor="email">Work email</label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              required
-            />
-          </div>
-          <div className="field">
-            <label htmlFor="password">Password</label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              autoComplete="new-password"
-              minLength={8}
-              required
-            />
-          </div>
-          <button className="button dark" type="submit">
-            Create account
-          </button>
+        <div>
+          {query.error && <p className="auth-message error" role="alert">{messages[query.error] || messages["account-failed"]}</p>}
+          <SignupForm />
           <p className="form-note">
             Already have an account?{" "}
-            <Link href="/login">
-              <u>Log in</u>
-            </Link>
+            <Link href="/login"><u>Log in</u></Link>
           </p>
-        </form>
+        </div>
       </section>
     </main>
   );

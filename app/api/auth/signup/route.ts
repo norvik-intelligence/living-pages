@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
-import { modes } from "@/lib/config";
+import { config, modes } from "@/lib/config";
+import { authCallbackUrl, signupError } from "@/lib/auth-flow";
 const schema = z.object({
   name: z.string().trim().min(2).max(80),
   email: z.email(),
@@ -17,10 +18,13 @@ export async function POST(request: Request) {
     password: parsed.data.password,
     options: {
       data: { full_name: parsed.data.name },
-      emailRedirectTo: new URL("/auth/confirm", request.url).toString(),
+      emailRedirectTo: authCallbackUrl(request.url, config.appUrl),
     },
   });
-  if (error) return NextResponse.redirect(new URL("/signup?error=account-failed", request.url), 303);
+  if (error) {
+    const code = signupError(error);
+    return NextResponse.redirect(new URL(`/signup?error=${code}`, request.url), 303);
+  }
   return NextResponse.redirect(
     new URL("/login?status=check-email", request.url),
     303,

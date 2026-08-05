@@ -1,112 +1,44 @@
 "use client";
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  BarChart3,
-  BookOpen,
-  Box,
-  ChevronDown,
-  Coins,
-  Command,
-  Compass,
-  FileText,
-  Globe2,
-  Home,
-  PanelLeft,
-  Palette,
-  Settings,
-  ShoppingBag,
-  Sparkles,
-  Users,
-  Zap,
-} from "lucide-react";
+import { useState } from "react";
+import { BarChart3, Box, ChevronDown, Coins, Command, Compass, FileText, Globe2, Home, Menu, Palette, Settings, Users, X, Zap } from "lucide-react";
+import type { WorkspaceContext } from "@/lib/core/types";
 import { Logo } from "./logo";
+
 const nav = [
-  ["Home", "/app", Home],
-  ["Sites", "/app/sites", Globe2],
-  ["Content", "/app/content", FileText],
-  ["Sources", "/app/sources", Compass],
-  ["Automations", "/app/automations", Zap],
-  ["Commerce", "/app/commerce", ShoppingBag],
-  ["Analytics", "/app/analytics", BarChart3],
-  ["Brand", "/app/brand", Palette],
-  ["Assets", "/app/assets", Box],
-  ["Domains", "/app/domains", Globe2],
-  ["Team", "/app/team", Users],
-  ["AI Credits", "/app/credits", Coins],
-  ["Billing", "/app/billing", BookOpen],
-  ["Settings", "/app/settings", Settings],
+  ["Overview", "/app", Home], ["Sites", "/app/sites", Globe2], ["Content", "/app/content", FileText],
+  ["Sources", "/app/sources", Compass], ["Automations", "/app/automations", Zap], ["Analytics", "/app/analytics", BarChart3],
+  ["Brand", "/app/brand", Palette], ["Assets", "/app/assets", Box], ["Domains", "/app/domains", Globe2],
+  ["Team", "/app/team", Users], ["AI credits", "/app/credits", Coins], ["Settings", "/app/settings", Settings],
 ] as const;
-export function AppShell({ children }: { children: React.ReactNode }) {
+
+export function AppShell({ children, context }: { children: React.ReactNode; context: WorkspaceContext }) {
   const path = usePathname();
+  const [mobileOpen, setMobileOpen] = useState(false);
   return (
     <div className="app-root">
-      <aside className="sidebar">
-        <div className="side-logo">
-          <Logo compact />
-          <button aria-label="Collapse sidebar">
-            <PanelLeft size={16} />
-          </button>
-        </div>
-        <button className="workspace">
-          <span className="avatar">N</span>
-          <span>
-            <b>Northstar Studio</b>
-            <small>Free workspace</small>
-          </span>
-          <ChevronDown size={14} />
-        </button>
+      <button className="mobile-sidebar-trigger" aria-label="Open navigation" onClick={() => setMobileOpen(true)}><Menu size={18} /></button>
+      {mobileOpen && <button className="sidebar-scrim" aria-label="Close navigation" onClick={() => setMobileOpen(false)} />}
+      <aside className={`sidebar ${mobileOpen ? "mobile-open" : ""}`}>
+        <div className="side-logo"><Logo compact /><span className="product-wordmark">Living <b>Pages</b></span><button aria-label="Close sidebar" onClick={() => setMobileOpen(false)}><X size={16} /></button></div>
+        <button className="workspace" type="button"><span className="avatar">{context.workspace.name.slice(0, 1)}</span><span><b>{context.workspace.name}</b><small>{context.workspace.role} workspace</small></span><ChevronDown size={14} /></button>
         <nav aria-label="Workspace navigation">
-          {nav.map(([label, href, Icon]) => (
-            <Link
-              key={href}
-              className={
-                path === href || (href !== "/app" && path.startsWith(href))
-                  ? "active"
-                  : ""
-              }
-              href={href}
-            >
-              <Icon size={17} />
-              <span>{label}</span>
-            </Link>
-          ))}
+          <span className="side-label">Workspace</span>
+          {nav.slice(0, 6).map(([label, href, Icon]) => <Link key={href} className={path === href || (href !== "/app" && path.startsWith(href)) ? "active" : ""} href={href} onClick={() => setMobileOpen(false)}><Icon size={16} /><span>{label}</span></Link>)}
+          <span className="side-label">System</span>
+          {nav.slice(6).map(([label, href, Icon]) => <Link key={href} className={path.startsWith(href) ? "active" : ""} href={href} onClick={() => setMobileOpen(false)}><Icon size={16} /><span>{label}</span></Link>)}
         </nav>
         <div className="side-bottom">
-          <div className="credit-mini">
-            <span>
-              <Sparkles size={14} /> AI credits
-            </span>
-            <b>100</b>
-            <i>
-              <em style={{ width: "18%" }} />
-            </i>
-          </div>
-          <button className="account">
-            <span className="avatar small">M</span>
-            <span>
-              <b>Mocca</b>
-              <small>Account settings</small>
-            </span>
-          </button>
+          <div className="credit-mini"><span><Coins size={13} /> AI credits</span><b>100</b><i><em style={{ width: "18%" }} /></i></div>
+          <form action="/api/auth/logout" method="post"><button className="account"><span className="avatar small">{context.user.name.slice(0, 1)}</span><span><b>{context.user.name}</b><small>{context.mode === "demo" ? "Demo session" : `${context.user.email} · Log out`}</small></span></button></form>
         </div>
       </aside>
       <section className="app-area">
         <header className="app-top">
-          <button className="site-switch">
-            <span className="live-dot" />
-            Northstar Website <ChevronDown size={13} />
-          </button>
-          <div className="top-actions">
-            <button aria-label="Command menu">
-              <Command size={16} />
-              <kbd>⌘ K</kbd>
-            </button>
-            <Link className="top-button" href="/preview/demo">
-              Preview
-            </Link>
-            <button className="top-button publish">Publish</button>
-          </div>
+          <div className="site-switch"><span className={context.site?.status === "published" ? "live-dot" : "draft-dot"} /><span>{context.site?.name || "No site selected"}</span><ChevronDown size={13} /></div>
+          <div className="top-actions"><button aria-label="Command menu"><Command size={15} /><span>Quick actions</span><kbd>⌘ K</kbd></button><span className={`environment-pill ${context.mode}`}>{context.mode === "demo" ? "Demo" : "Connected"}</span></div>
         </header>
         {children}
       </section>

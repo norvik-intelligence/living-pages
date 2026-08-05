@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { Logo } from "@/components/logo";
-export default function Login() {
+export default async function Login({ searchParams }: { searchParams: Promise<{ error?: string; status?: string }> }) {
+  const query = await searchParams;
+  const message = query.status === "check-email" ? "Check your email to confirm the account." : query.status === "signed-out" ? "You have been signed out." : query.error ? "Your session could not be verified. Please log in again." : "";
   return (
     <main id="content" className="auth-page">
       <aside className="auth-aside">
@@ -20,6 +22,7 @@ export default function Login() {
           <span className="eyebrow">Welcome back</span>
           <h1>Log in</h1>
           <p className="muted">Continue to your Living Pages workspace.</p>
+          {message && <p className={query.error ? "auth-message error" : "auth-message"} role="status">{message}</p>}
           <div className="field">
             <label htmlFor="email">Work email</label>
             <input

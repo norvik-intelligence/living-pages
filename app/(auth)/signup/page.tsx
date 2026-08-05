@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Logo } from "@/components/logo";
-export default function Signup() {
+export default async function Signup({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
+  const query = await searchParams;
   return (
     <main id="content" className="auth-page">
       <aside className="auth-aside">
@@ -20,8 +21,9 @@ export default function Signup() {
           <span className="eyebrow">Create workspace</span>
           <h1>Start free</h1>
           <p className="muted">
-            Real authentication activates when Supabase is connected.
+            One account. One governed workspace. No credit card required.
           </p>
+          {query.error && <p className="auth-message error" role="alert">{query.error === "not-configured" ? "Account creation is not configured yet." : "Check your details and try again."}</p>}
           <div className="field">
             <label htmlFor="name">Full name</label>
             <input id="name" name="name" autoComplete="name" required />

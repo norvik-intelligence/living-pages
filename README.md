@@ -2,19 +2,22 @@
 
 Living Pages is a brand-governed Living Web Operating System: component-based websites, structured content, controlled automations and reviewable AI assistance in one modular core.
 
-## Implemented foundation
+## Implemented Pages core
 
 - Premium responsive marketing site and product/pricing routes
 - Auth forms plus real Supabase SSR adapter when configured
-- Five-step onboarding and workspace shell
-- Sites/pages, structured editor with undo/redo, preview and save state
+- Transactional five-step onboarding that creates the owner workspace, site, governed homepage, brand and credit account
+- Tenant-aware workspace shell plus real site/page data access
+- Structured editor with add, edit, move, duplicate, delete, undo/redo, responsive canvas and SEO metadata
+- Conflict-aware persisted drafts, private preview, immutable publish snapshots, public rendering and rollback
+- Server authorization, repaired tenant RLS helpers, plan-owned site limits and audit events
 - Brand, content, sources, automations, credits, billing, domains, team and analytics surfaces
 - Explicit demo/mock/unconfigured service modes
 - Zod block validation, centralized entitlements and deterministic AI provider
 - Supabase schema with tenant RLS and indexes
 - Unit/E2E scaffolding, CI, security headers and deployment documentation
 
-Commerce checkout, production analytics ingestion, live source sync, transactional billing and production publishing remain disabled until their external services and server workflows are connected.
+Commerce checkout, production analytics ingestion, live source sync, transactional billing, uploads and domain automation remain disabled until their external services and complete server workflows are connected. Pages publishing is implemented and activates after Supabase configuration plus both migrations.
 
 ## Local setup
 
@@ -28,7 +31,12 @@ Without environment variables, the product runs as a visibly marked demonstratio
 
 ## Supabase
 
-Create a project, set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, then apply `supabase/migrations/20260805000000_initial_core.sql`. Configure the auth site URL and `/auth/confirm` redirect. Never put a Supabase secret key in a `NEXT_PUBLIC_` variable.
+Create a project, set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, then apply migrations in order:
+
+1. `supabase/migrations/20260805000000_initial_core.sql`
+2. `supabase/migrations/20260805010000_operational_pages_core.sql`
+
+Configure the auth site URL and `/auth/confirm` redirect. Never put a Supabase secret key in a `NEXT_PUBLIC_` variable.
 
 ## Quality
 

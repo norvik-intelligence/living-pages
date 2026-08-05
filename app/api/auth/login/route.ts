@@ -8,25 +8,10 @@ const schema = z.object({
 });
 export async function POST(request: Request) {
   const parsed = schema.safeParse(Object.fromEntries(await request.formData()));
-  if (!parsed.success)
-    return NextResponse.json(
-      { error: "Enter a valid email and password." },
-      { status: 400 },
-    );
-  if (modes.auth === "unconfigured")
-    return NextResponse.json(
-      {
-        error:
-          "Authentication is not configured. Add Supabase environment variables.",
-      },
-      { status: 503 },
-    );
+  if (!parsed.success) return NextResponse.redirect(new URL("/login?error=invalid-details", request.url), 303);
+  if (modes.auth === "unconfigured") return NextResponse.redirect(new URL("/login?error=not-configured", request.url), 303);
   const client = await createClient();
   const { error } = await client.auth.signInWithPassword(parsed.data);
-  if (error)
-    return NextResponse.json(
-      { error: "Email or password is incorrect." },
-      { status: 401 },
-    );
+  if (error) return NextResponse.redirect(new URL("/login?error=invalid-credentials", request.url), 303);
   return NextResponse.redirect(new URL("/app", request.url), 303);
 }

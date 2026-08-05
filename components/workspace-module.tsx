@@ -81,7 +81,7 @@ const pages = [
   ["Case Studies", "/work", "Published", "5 days ago"],
   ["Contact", "/contact", "Published", "1 week ago"],
 ];
-export function WorkspaceModule({ slug }: { slug: string }) {
+export function WorkspaceModule({ slug, mode = "demo" }: { slug: string; mode?: "demo" | "connected" }) {
   const info = moduleInfo[slug] || moduleInfo.sites;
   const [notice, setNotice] = useState("");
   return (
@@ -126,7 +126,13 @@ export function WorkspaceModule({ slug }: { slug: string }) {
           <button onClick={() => setNotice("")}>Dismiss</button>
         </div>
       )}
-      {renderModule(slug)}
+      {mode === "connected" ? (
+        <Empty
+          icon={<ShieldCheck />}
+          title={`${info.title} is ready for connected records`}
+          text="No production records are fabricated. This module activates as its persisted workflow is completed; the Pages publishing core is operational now."
+        />
+      ) : renderModule(slug)}
     </main>
   );
 }

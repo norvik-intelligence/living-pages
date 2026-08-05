@@ -9,16 +9,8 @@ const schema = z.object({
 });
 export async function POST(request: Request) {
   const parsed = schema.safeParse(Object.fromEntries(await request.formData()));
-  if (!parsed.success)
-    return NextResponse.json(
-      { error: "Check the account details and try again." },
-      { status: 400 },
-    );
-  if (modes.auth === "unconfigured")
-    return NextResponse.json(
-      { error: "Authentication is not configured. No account was created." },
-      { status: 503 },
-    );
+  if (!parsed.success) return NextResponse.redirect(new URL("/signup?error=invalid-details", request.url), 303);
+  if (modes.auth === "unconfigured") return NextResponse.redirect(new URL("/signup?error=not-configured", request.url), 303);
   const client = await createClient();
   const { error } = await client.auth.signUp({
     email: parsed.data.email,
@@ -28,11 +20,7 @@ export async function POST(request: Request) {
       emailRedirectTo: new URL("/auth/confirm", request.url).toString(),
     },
   });
-  if (error)
-    return NextResponse.json(
-      { error: "Account creation failed." },
-      { status: 400 },
-    );
+  if (error) return NextResponse.redirect(new URL("/signup?error=account-failed", request.url), 303);
   return NextResponse.redirect(
     new URL("/login?status=check-email", request.url),
     303,

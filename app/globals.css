@@ -692,8 +692,10 @@ footer {
   padding: 40px;
 }
 .auth-form {
-  width: min(420px, 100%);
+  width: 100%;
 }
+.auth-panel { width: min(420px, 100%); }
+.auth-panel > .auth-message { margin-bottom: 16px; }
 .auth-form h1 {
   font-size: 46px;
   margin: 20px 0;
@@ -722,6 +724,11 @@ footer {
 .auth-form .button {
   width: 100%;
   margin-top: 8px;
+}
+.auth-resend {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
 }
 .form-note {
   font-size: 13px;

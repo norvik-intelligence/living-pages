@@ -1,0 +1,2 @@
+-- Demo data is created through onboarding so every row has a real auth owner.
+-- Northstar Studio content lives in the application demo layer until a user opts into seeding.

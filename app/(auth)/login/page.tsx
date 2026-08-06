@@ -35,7 +35,7 @@ export default async function Login({ searchParams }: { searchParams: Promise<{ 
           <p className="auth-quote">
             A website that remembers what your brand stands for.
           </p>
-          <p style={{ color: "#aeb3ab" }}>
+          <p className="muted">
             Controlled. Connected. Always current.
           </p>
         </div>
@@ -79,7 +79,7 @@ export default async function Login({ searchParams }: { searchParams: Promise<{ 
           {!isDemo && <p className="form-note">
             No account?{" "}
             <Link href="/signup">
-              <u>Start free</u>
+              <u>Create an account</u>
             </Link>
           </p>}
         </div>

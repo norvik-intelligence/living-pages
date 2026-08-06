@@ -27,43 +27,43 @@ const moduleInfo: Record<string, { title: string; desc: string }> = {
   },
   content: {
     title: "Content",
-    desc: "Structured content that can flow into any component.",
+    desc: "Write once, keep it organized and use it across your website.",
   },
   sources: {
     title: "Sources",
-    desc: "Connect trusted inputs that keep the website informed.",
+    desc: "Bring trusted information into one place for review.",
   },
   automations: {
     title: "Automations",
-    desc: "Turn events into controlled suggestions and review tasks.",
+    desc: "Let repetitive work happen automatically, with your approval.",
   },
   commerce: {
     title: "Commerce",
     desc: "Products, services and orders on the shared Living core.",
   },
   analytics: {
-    title: "Analytics",
-    desc: "Measured activity only—no invented production traffic.",
+    title: "Insights",
+    desc: "See what visitors use and where your website can improve.",
   },
   brand: {
-    title: "Brand system",
-    desc: "The rules every human and AI-assisted output must follow.",
+    title: "Your brand",
+    desc: "Keep colors, type and tone consistent everywhere.",
   },
   assets: {
     title: "Assets",
-    desc: "Logos, images, documents and reusable media.",
+    desc: "Find your logos, images and documents in one library.",
   },
   domains: {
     title: "Domains",
-    desc: "Manage subdomains, DNS verification and primary domains.",
+    desc: "Choose the web address people use to visit your website.",
   },
   team: {
     title: "Team",
-    desc: "Workspace roles, invitations and access boundaries.",
+    desc: "Invite people and decide what each person can change.",
   },
   credits: {
     title: "AI credits",
-    desc: "Transparent reservations, consumption and ledger history.",
+    desc: "See how much AI assistance is available and what was used.",
   },
   billing: {
     title: "Billing",
@@ -71,7 +71,7 @@ const moduleInfo: Record<string, { title: string; desc: string }> = {
   },
   settings: {
     title: "Settings",
-    desc: "Workspace, locale, integrations and operational modes.",
+    desc: "Manage your workspace, language and connected services.",
   },
 };
 const pages = [
@@ -84,6 +84,8 @@ const pages = [
 export function WorkspaceModule({ slug, mode = "demo" }: { slug: string; mode?: "demo" | "connected" }) {
   const info = moduleInfo[slug] || moduleInfo.sites;
   const [notice, setNotice] = useState("");
+  const searchable = slug === "content" || slug === "assets";
+  const creatable = ["content", "sources", "automations", "assets", "team"].includes(slug);
   return (
     <main className="workspace-main" id="content">
       <header className="workspace-head">
@@ -92,8 +94,8 @@ export function WorkspaceModule({ slug, mode = "demo" }: { slug: string; mode?: 
           <h1>{info.title}</h1>
           <p>{info.desc}</p>
         </div>
-        <div className="actions">
-          <button
+        {(searchable || creatable) && <div className="actions">
+          {searchable && <button
             className="app-button"
             onClick={() =>
               setNotice(
@@ -103,8 +105,8 @@ export function WorkspaceModule({ slug, mode = "demo" }: { slug: string; mode?: 
           >
             <Search size={14} />
             Search
-          </button>
-          <button
+          </button>}
+          {creatable && <button
             className="app-button primary"
             onClick={() =>
               setNotice(
@@ -113,9 +115,9 @@ export function WorkspaceModule({ slug, mode = "demo" }: { slug: string; mode?: 
             }
           >
             <Plus size={14} />
-            Add {slug === "sites" ? "site" : "new"}
-          </button>
-        </div>
+            Add new
+          </button>}
+        </div>}
       </header>
       {notice && (
         <div className="banner">
@@ -128,14 +130,14 @@ export function WorkspaceModule({ slug, mode = "demo" }: { slug: string; mode?: 
       )}
       {mode === "demo" && (
         <div className="banner demo-banner">
-          <span><ShieldCheck size={14} /> Read-only demo · all records, balances and activity on this screen are samples.</span>
+          <span><ShieldCheck size={14} /> Demo mode · everything on this screen is sample content.</span>
         </div>
       )}
       {mode === "connected" ? (
         <Empty
           icon={<ShieldCheck />}
-          title={`${info.title} is ready for connected records`}
-          text="No production records are fabricated. This module activates as its persisted workflow is completed; the Pages publishing core is operational now."
+          title={`${info.title} is ready to use`}
+          text="There is nothing here yet. Add your first item when this workspace is connected."
         />
       ) : renderModule(slug)}
     </main>
@@ -648,13 +650,13 @@ function Billing() {
     <section className="grid-2">
       <div className="panel">
         <div className="panel-head">
-          <h2>Current plan</h2>
+          <h2>Current access</h2>
           <span className="mode-badge">Mock billing</span>
         </div>
-        <p style={{ fontSize: 34, letterSpacing: "-.05em" }}>Free</p>
+        <p style={{ fontSize: 34, letterSpacing: "-.05em" }}>Interactive demo</p>
         <p className="muted" style={{ fontSize: 11 }}>
-          No payment has been taken. Connect Stripe and create verified price
-          IDs before upgrades can activate.
+          No payment has been taken. Paid access starts at €49 per month after
+          Stripe and verified price IDs are connected.
         </p>
         <Link href="/pricing" className="app-button primary">
           Compare plans
@@ -665,11 +667,11 @@ function Billing() {
           <h2>Entitlements</h2>
         </div>
         {[
-          ["Create site", "1 of 1"],
-          ["Add page", "5 of 3 demo"],
-          ["Custom domain", "Unavailable"],
-          ["Automation", "Unavailable"],
-          ["AI action", "Available"],
+          ["Explore sample website", "Available"],
+          ["Try the page editor", "Available"],
+          ["Save or publish", "Demo only"],
+          ["Custom domain", "Paid plans"],
+          ["AI assistance", "Sample mode"],
         ].map((x) => (
           <div className="check-row" key={x[0]}>
             <span>{x[0]}</span>

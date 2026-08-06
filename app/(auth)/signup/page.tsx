@@ -21,8 +21,8 @@ export default async function Signup({ searchParams }: { searchParams: Promise<{
           <p className="auth-quote">
             Build the site once. Keep the business moving.
           </p>
-          <p style={{ color: "#aeb3ab" }}>
-            No credit card. Start with one living site.
+          <p className="muted">
+            Explore the studio first. Choose a plan when you are ready to publish.
           </p>
         </div>
         <span className="eyebrow">Your system starts here</span>

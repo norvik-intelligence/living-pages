@@ -9,20 +9,29 @@ export function Header() {
       <div className="container nav">
         <Logo />
         <nav aria-label="Main navigation">
-          <Link href="/product">Product</Link>
+          <Link href="/product">Platform</Link>
           <Link href="/templates">Templates</Link>
+          <Link href="/showcase">Showcase</Link>
           <Link href="/pricing">Pricing</Link>
-          <Link href="/resources">Resources</Link>
         </nav>
         <div className="nav-actions">
-          <Link href={isDemo ? "/product" : "/login"}>{isDemo ? "View product" : "Log in"}</Link>
+          <Link href={isDemo ? "/product" : "/login"}>{isDemo ? "How it works" : "Log in"}</Link>
           <Link className="button dark small" href={isDemo ? "/app" : "/signup"}>
-            {isDemo ? "Open demo" : "Start building"} <ArrowRight size={14} />
+            {isDemo ? "Explore the studio" : "Start building"} <ArrowRight size={14} />
           </Link>
         </div>
-        <button className="mobile-menu" aria-label="Open menu">
-          <Menu />
-        </button>
+        <details className="mobile-menu">
+          <summary aria-label="Open navigation"><Menu size={21} /></summary>
+          <nav aria-label="Mobile navigation">
+            <Link href="/product">Platform</Link>
+            <Link href="/templates">Templates</Link>
+            <Link href="/showcase">Showcase</Link>
+            <Link href="/pricing">Pricing</Link>
+            <Link className="button dark" href={isDemo ? "/app" : "/signup"}>
+              {isDemo ? "Explore the studio" : "Start building"} <ArrowRight size={15} />
+            </Link>
+          </nav>
+        </details>
       </div>
     </header>
   );
@@ -34,7 +43,7 @@ export function Footer() {
         <div>
           <Logo />
           <p className="muted">
-            The web operating system for brands that refuse to stand still.
+            A brand-governed website studio for teams that want to move faster without lowering the bar.
           </p>
         </div>
         {[

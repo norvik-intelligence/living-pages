@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useReducer, useState, useTransition } from "react";
-import { ArrowDown, ArrowLeft, ArrowUp, Check, Copy, Eye, GripVertical, Laptop, Plus, Redo2, Rocket, Save, Smartphone, Trash2, Undo2 } from "lucide-react";
+import { ArrowDown, ArrowLeft, ArrowUp, Check, Copy, Eye, GripVertical, Laptop, Layers3, Plus, Redo2, Rocket, Save, SlidersHorizontal, Smartphone, Trash2, Undo2, X } from "lucide-react";
 import { publishPage, rollbackPublishedVersion, savePageDraft, type ActionResult } from "@/app/actions/core";
 import { PageRenderer } from "@/components/page-renderer";
 import type { DraftBlock, EditorPage } from "@/lib/core/types";
@@ -35,6 +35,7 @@ export function Editor({ page, isDemo }: { page: EditorPage; isDemo: boolean }) 
   const [metaDescription, setMetaDescription] = useState(page.metaDescription);
   const [expectedUpdatedAt, setExpectedUpdatedAt] = useState(page.updatedAt);
   const [viewport, setViewport] = useState<"desktop" | "mobile">("desktop");
+  const [mobilePanel, setMobilePanel] = useState<"sections" | "content" | null>(null);
   const [result, setResult] = useState<ActionResult>({ ok: true, message: isDemo ? "Demo edits stay on this screen" : "All changes saved" });
   const [pending, startTransition] = useTransition();
   const selected = useMemo(() => history.blocks.find((block) => block.id === selectedId), [history.blocks, selectedId]);
@@ -62,9 +63,10 @@ export function Editor({ page, isDemo }: { page: EditorPage; isDemo: boolean }) 
 
   return (
     <main className="editor-root" id="content">
-      <aside className="editor-panel layers-panel">
+      <aside className={`editor-panel layers-panel ${mobilePanel === "sections" ? "mobile-visible" : ""}`}>
+        <button className="mobile-panel-close" aria-label="Close sections" onClick={() => setMobilePanel(null)}><X size={18} /></button>
         <Link className="editor-back" href={`/app/sites/${page.siteId}/pages`}><ArrowLeft size={14} /> {page.siteName}</Link>
-        <div className="panel-title">Page layers</div>
+        <div className="panel-title">Page sections</div>
         {history.blocks.map((block) => (
           <button className={`component-item ${selectedId === block.id ? "selected" : ""}`} key={block.id} onClick={() => setSelectedId(block.id)}>
             <GripVertical size={12} /><span>{blockNames[block.type]}</span>{selectedId === block.id && <Check size={12} />}
@@ -79,7 +81,7 @@ export function Editor({ page, isDemo }: { page: EditorPage; isDemo: boolean }) 
           ))}
         </div>
         <div className="editor-version-list">
-          <div className="panel-title">Published history</div>
+          <div className="panel-title">Version history</div>
           {page.versions.length ? page.versions.slice(0, 5).map((version) => (
             <button key={version.id} onClick={() => startTransition(async () => setResult(await rollbackPublishedVersion(page.id, version.id)))} disabled={pending || page.publishedVersionId === version.id}>
               <span>Version {version.version}</span><small>{page.publishedVersionId === version.id ? "Live" : "Restore"}</small>
@@ -91,6 +93,7 @@ export function Editor({ page, isDemo }: { page: EditorPage; isDemo: boolean }) 
       <section className="editor-canvas-wrap">
         {isDemo && <div className="editor-demo-notice" role="status">Demo mode · editing is interactive, but save and publish are disabled.</div>}
         <header className="editor-toolbar">
+          <button className="icon-button editor-mobile-control" onClick={() => setMobilePanel("sections")} aria-label="Open page sections"><Layers3 size={16} /></button>
           <div className="editor-doc-title"><span className={dirty ? "dirty-dot" : "saved-dot"} /><b>{page.name}</b><small>{result.message}</small></div>
           <div className="toolbar-cluster">
             <button className="icon-button" disabled={!history.past.length} onClick={() => dispatch({ type: "undo" })} aria-label="Undo"><Undo2 size={14} /></button>
@@ -101,6 +104,7 @@ export function Editor({ page, isDemo }: { page: EditorPage; isDemo: boolean }) 
             <button className={viewport === "mobile" ? "active" : ""} onClick={() => setViewport("mobile")} aria-label="Mobile preview"><Smartphone size={14} /></button>
           </div>
           <div className="toolbar-actions">
+            <button className="app-button editor-mobile-control" onClick={() => setMobilePanel("content")} aria-label="Edit selected section"><SlidersHorizontal size={16} /> Edit</button>
             <Link className="app-button" href={`/app/sites/${page.siteId}/pages/${page.id}/preview`}><Eye size={13} /> Preview</Link>
             <button className="app-button" disabled={isDemo || pending || !dirty} onClick={() => run("save")} title={isDemo ? "Saving is disabled in demo mode" : undefined}><Save size={13} /> {pending ? "Working…" : "Save"}</button>
             <button className="app-button publish-action" disabled={isDemo || pending} onClick={() => run("publish")} title={isDemo ? "Publishing is disabled in demo mode" : undefined}><Rocket size={13} /> Publish</button>
@@ -110,8 +114,9 @@ export function Editor({ page, isDemo }: { page: EditorPage; isDemo: boolean }) 
         <div className={`editor-device ${viewport}`}><PageRenderer blocks={history.blocks} preview /></div>
       </section>
 
-      <aside className="editor-panel right inspector-panel">
-        <div className="inspector-title"><div><span>Selected block</span><b>{selected ? blockNames[selected.type] : "None"}</b></div>{selected && <span className="schema-pill">Structured</span>}</div>
+      <aside className={`editor-panel right inspector-panel ${mobilePanel === "content" ? "mobile-visible" : ""}`}>
+        <button className="mobile-panel-close" aria-label="Close content editor" onClick={() => setMobilePanel(null)}><X size={18} /></button>
+        <div className="inspector-title"><div><span>Editing section</span><b>{selected ? blockNames[selected.type] : "None selected"}</b></div>{selected && <span className="schema-pill">Safe block</span>}</div>
         {selected && <>
           <div className="tabs"><button className="active">Content</button><button disabled>Style</button><button disabled>Rules</button></div>
           {Object.entries(selected.content).filter(([, value]) => typeof value === "string").map(([key, value]) => (
@@ -125,8 +130,8 @@ export function Editor({ page, isDemo }: { page: EditorPage; isDemo: boolean }) 
             <button className="danger" disabled={history.blocks.length === 1} onClick={() => { replaceBlocks(history.blocks.filter((block) => block.id !== selected.id)); setSelectedId(history.blocks.find((block) => block.id !== selected.id)?.id); }} aria-label="Delete"><Trash2 size={14} /></button>
           </div>
         </>}
-        <div className="seo-panel"><div className="panel-title">Search metadata</div><label className="prop-field"><span>Title · {metaTitle.length}/70</span><input maxLength={70} value={metaTitle} onChange={(event) => setMetaTitle(event.target.value)} /></label><label className="prop-field"><span>Description · {metaDescription.length}/180</span><textarea rows={4} maxLength={180} value={metaDescription} onChange={(event) => setMetaDescription(event.target.value)} /></label></div>
-        <p className="inspector-note">No arbitrary HTML or JavaScript. Every publish creates a recoverable, immutable version.</p>
+        <div className="seo-panel"><div className="panel-title">Google preview text</div><label className="prop-field"><span>Page title · {metaTitle.length}/70</span><input maxLength={70} value={metaTitle} onChange={(event) => setMetaTitle(event.target.value)} /></label><label className="prop-field"><span>Short description · {metaDescription.length}/180</span><textarea rows={4} maxLength={180} value={metaDescription} onChange={(event) => setMetaDescription(event.target.value)} /></label></div>
+        <p className="inspector-note">Your page uses safe, responsive sections. Every published change can be restored later.</p>
       </aside>
     </main>
   );

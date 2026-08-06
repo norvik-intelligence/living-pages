@@ -5,10 +5,10 @@ const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 const mono = Geist_Mono({ subsets: ["latin"], variable: "--font-mono" });
 export const metadata: Metadata = {
   title: {
-    default: "Living Pages — Build once. Stay alive.",
+    default: "Living Pages — A website that grows with your business",
     template: "%s — Living Pages",
   },
-  description: "A living web operating system for brand-controlled websites.",
+  description: "Design, content and brand-governed publishing in one clear website studio.",
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
   ),

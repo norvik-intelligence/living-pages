@@ -14,7 +14,10 @@ function text(value: unknown, fallback = "") {
 }
 
 export const getWorkspaceContext = cache(async (): Promise<WorkspaceContext> => {
-  if (modes.database === "demo") return demoContext;
+  if (modes.application === "demo") return demoContext;
+  if (modes.database !== "connected") {
+    throw new Error("The production database is not configured.");
+  }
 
   const client = await createClient();
   const { data: auth, error: authError } = await client.auth.getUser();
@@ -160,7 +163,7 @@ export async function getEditorPage(pageId: string): Promise<EditorPage | null> 
 }
 
 export async function getPublicPage(siteSlug: string, pageSlug: string) {
-  if (modes.database === "demo") {
+  if (modes.application === "demo") {
     if (siteSlug !== demoPage.siteSlug) return null;
     return { site: { name: demoPage.siteName, slug: demoPage.siteSlug }, page: demoPage, blocks: demoPage.blocks };
   }

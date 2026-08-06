@@ -725,6 +725,7 @@ footer {
   width: 100%;
   margin-top: 8px;
 }
+.auth-demo-button { margin-top: 24px !important; }
 .auth-resend {
   margin-top: 20px;
   padding-top: 20px;

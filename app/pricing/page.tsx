@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Footer, Header, CheckItem } from "@/components/marketing";
+import { modes } from "@/lib/config";
 const plans = [
   {
     n: "Free",
@@ -89,9 +90,9 @@ export default function Pricing() {
                 </ul>
                 <Link
                   className={`button ${i === 2 ? "accent" : ""}`}
-                  href="/signup"
+                  href={modes.application === "demo" ? "/app" : "/signup"}
                 >
-                  Choose {x.n}
+                  {modes.application === "demo" ? "Explore demo" : `Choose ${x.n}`}
                 </Link>
               </article>
             ))}

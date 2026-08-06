@@ -35,6 +35,11 @@ const createSiteSchema = z.object({
   type: z.enum(["business", "portfolio", "service", "agency"]).default("business"),
 });
 
+const demoMutationResult: ActionResult = {
+  ok: false,
+  message: "Demo mode uses read-only sample data. Activate connected mode to save changes.",
+};
+
 function slugify(value: string) {
   const slug = value
     .normalize("NFKD")
@@ -47,7 +52,13 @@ function slugify(value: string) {
 }
 
 async function requireAuthenticatedClient() {
-  if (modes.auth !== "connected") throw new Error("Supabase is not configured.");
+  if (modes.auth !== "connected") {
+    throw new Error(
+      modes.auth === "demo"
+        ? demoMutationResult.message
+        : "Supabase is not configured.",
+    );
+  }
   const client = await createClient();
   const { data, error } = await client.auth.getUser();
   if (error || !data.user) throw new Error("Your session has expired. Please log in again.");
@@ -79,6 +90,7 @@ export async function bootstrapWorkspace(
   _previous: ActionResult,
   formData: FormData,
 ): Promise<ActionResult> {
+  if (modes.application === "demo") return demoMutationResult;
   const parsed = onboardingSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { ok: false, message: "Complete every onboarding step before continuing." };
   try {
@@ -106,6 +118,7 @@ export async function createSite(
   _previous: ActionResult,
   formData: FormData,
 ): Promise<ActionResult> {
+  if (modes.application === "demo") return demoMutationResult;
   const parsed = createSiteSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { ok: false, message: "Enter a valid site name." };
   try {
@@ -156,7 +169,7 @@ async function persistDraft(input: z.infer<typeof pageMutationSchema>) {
 export async function savePageDraft(input: unknown): Promise<ActionResult> {
   const parsed = pageMutationSchema.safeParse(input);
   if (!parsed.success) return { ok: false, message: "The page contains invalid or unsupported blocks." };
-  if (modes.database === "demo") return { ok: false, message: "Demo edits are local only. Connect Supabase to persist this draft." };
+  if (modes.application === "demo") return demoMutationResult;
   try {
     const result = await persistDraft(parsed.data);
     return { ok: true, message: "Draft saved", updatedAt: result?.updated_at || new Date().toISOString() };
@@ -168,7 +181,7 @@ export async function savePageDraft(input: unknown): Promise<ActionResult> {
 export async function publishPage(input: unknown): Promise<ActionResult> {
   const parsed = pageMutationSchema.safeParse(input);
   if (!parsed.success) return { ok: false, message: "The page cannot be published until all blocks are valid." };
-  if (modes.database === "demo") return { ok: false, message: "Publishing is disabled in demo mode. Connect Supabase first." };
+  if (modes.application === "demo") return demoMutationResult;
   try {
     const saved = await persistDraft(parsed.data);
     const { client, page } = await requireEditor(parsed.data.pageId);
@@ -192,6 +205,7 @@ export async function publishPage(input: unknown): Promise<ActionResult> {
 }
 
 export async function rollbackPublishedVersion(pageId: string, versionId: string): Promise<ActionResult> {
+  if (modes.application === "demo") return demoMutationResult;
   const parsed = z.object({ pageId: z.uuid(), versionId: z.uuid() }).safeParse({ pageId, versionId });
   if (!parsed.success) return { ok: false, message: "Invalid version." };
   try {

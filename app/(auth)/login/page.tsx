@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Logo } from "@/components/logo";
 import { ResendConfirmationForm } from "@/components/resend-confirmation-form";
+import { modes } from "@/lib/config";
 export default async function Login({ searchParams }: { searchParams: Promise<{ error?: string; status?: string }> }) {
   const query = await searchParams;
   const messages: Record<string, string> = {
@@ -12,6 +13,7 @@ export default async function Login({ searchParams }: { searchParams: Promise<{ 
     "rate-limited": "A confirmation email was already sent. Wait 60 seconds, then try again.",
     "account-failed": "We could not send a confirmation email. Try again in a moment.",
     "not-configured": "Account confirmation is not configured yet.",
+    "demo-active": "Account access is paused while the public demo is active.",
   };
   const message = query.status
     ? messages[query.status] || ""
@@ -24,6 +26,7 @@ export default async function Login({ searchParams }: { searchParams: Promise<{ 
     query.error === "confirmation-failed" ||
     query.error === "rate-limited" ||
     query.error === "account-failed";
+  const isDemo = modes.application === "demo";
   return (
     <main id="content" className="auth-page">
       <aside className="auth-aside">
@@ -40,11 +43,13 @@ export default async function Login({ searchParams }: { searchParams: Promise<{ 
       </aside>
       <section className="auth-main">
         <div className="auth-form">
-          <span className="eyebrow">Welcome back</span>
-          <h1>Log in</h1>
-          <p className="muted">Continue to your Living Pages workspace.</p>
+          <span className="eyebrow">{isDemo ? "Public product demo" : "Welcome back"}</span>
+          <h1>{isDemo ? "No account needed." : "Log in"}</h1>
+          <p className="muted">{isDemo ? "Explore the complete dashboard with isolated sample data. Nothing you do here changes production data." : "Continue to your Living Pages workspace."}</p>
           {message && <p className={query.error ? "auth-message error" : "auth-message"} role="status">{message}</p>}
-          <form action="/api/auth/login" method="post">
+          {isDemo ? (
+            <Link className="button dark auth-demo-button" href="/app">Open demo dashboard</Link>
+          ) : <form action="/api/auth/login" method="post">
             <div className="field">
               <label htmlFor="email">Work email</label>
               <input
@@ -69,14 +74,14 @@ export default async function Login({ searchParams }: { searchParams: Promise<{ 
             <button className="button dark" type="submit">
               Log in
             </button>
-          </form>
-          {showResend && <ResendConfirmationForm />}
-          <p className="form-note">
+          </form>}
+          {!isDemo && showResend && <ResendConfirmationForm />}
+          {!isDemo && <p className="form-note">
             No account?{" "}
             <Link href="/signup">
               <u>Start free</u>
             </Link>
-          </p>
+          </p>}
         </div>
       </section>
     </main>

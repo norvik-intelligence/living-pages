@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowRight, Check } from "lucide-react";
 import { Footer, Header } from "@/components/marketing";
+import { modes } from "@/lib/config";
 const data: Record<
   string,
   { k: string; t: string; d: string; items: string[] }
@@ -129,8 +130,8 @@ export default async function Page({
             <span className="eyebrow">{x.k}</span>
             <h1>{x.t}</h1>
             <p className="muted">{x.d}</p>
-            <Link className="button dark" href="/signup">
-              Start building <ArrowRight size={16} />
+            <Link className="button dark" href={modes.application === "demo" ? "/app" : "/signup"}>
+              {modes.application === "demo" ? "Open dashboard demo" : "Start building"} <ArrowRight size={16} />
             </Link>
           </div>
         </section>

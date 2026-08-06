@@ -12,7 +12,7 @@ Living Pages is a brand-governed Living Web Operating System: component-based we
 - Conflict-aware persisted drafts, private preview, immutable publish snapshots, public rendering and rollback
 - Server authorization, repaired tenant RLS helpers, plan-owned site limits and audit events
 - Brand, content, sources, automations, credits, billing, domains, team and analytics surfaces
-- Explicit demo/mock/unconfigured service modes
+- Explicit application mode independent of provider configuration: a public, read-only demo or an authenticated connected product
 - Zod block validation, centralized entitlements and deterministic AI provider
 - Supabase schema with tenant RLS and indexes
 - Unit/E2E scaffolding, CI, security headers and deployment documentation
@@ -27,7 +27,7 @@ cp .env.example .env.local
 npm run dev
 ```
 
-Without environment variables, the product runs as a visibly marked demonstration; auth and mutating production operations do not claim success.
+Set `LIVING_APP_MODE=demo` for a visibly marked public dashboard with isolated Northstar sample data. Demo mode does not query tenant data and all server-side mutations, publishing and rollback are denied. Set `LIVING_APP_MODE=connected` only when Supabase, migrations and Auth URLs are ready. A missing or invalid value safely falls back to demo, even when Supabase variables exist.
 
 ## Supabase
 
@@ -37,6 +37,8 @@ Create a project, set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLI
 2. `supabase/migrations/20260805010000_operational_pages_core.sql`
 
 Configure the auth site URL and `/auth/confirm` redirect. Never put a Supabase secret key in a `NEXT_PUBLIC_` variable.
+
+Supabase can remain configured while `LIVING_APP_MODE=demo`; its presence does not unlock auth or persistence until the application mode is changed to `connected` and redeployed.
 
 ## Quality
 

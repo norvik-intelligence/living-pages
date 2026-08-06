@@ -32,7 +32,11 @@ export function AppShell({ children, context }: { children: React.ReactNode; con
         </nav>
         <div className="side-bottom">
           <div className="credit-mini"><span><Coins size={13} /> AI credits</span><b>100</b><i><em style={{ width: "18%" }} /></i></div>
-          <form action="/api/auth/logout" method="post"><button className="account"><span className="avatar small">{context.user.name.slice(0, 1)}</span><span><b>{context.user.name}</b><small>{context.mode === "demo" ? "Demo session" : `${context.user.email} · Log out`}</small></span></button></form>
+          {context.mode === "demo" ? (
+            <Link className="account" href="/"><span className="avatar small">{context.user.name.slice(0, 1)}</span><span><b>{context.user.name}</b><small>Demo data · back to website</small></span></Link>
+          ) : (
+            <form action="/api/auth/logout" method="post"><button className="account"><span className="avatar small">{context.user.name.slice(0, 1)}</span><span><b>{context.user.name}</b><small>{context.user.email} · Log out</small></span></button></form>
+          )}
         </div>
       </aside>
       <section className="app-area">

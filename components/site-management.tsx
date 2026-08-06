@@ -21,7 +21,7 @@ export function SitesView({ sites, isDemo }: { sites: SiteSummary[]; isDemo: boo
         </div>
         <button className="app-button primary" onClick={() => setOpen(true)}><Plus size={14} /> New site</button>
       </header>
-      {isDemo && <div className="banner demo-banner"><span>Demo data · connect Supabase to create and persist sites.</span></div>}
+      {isDemo && <div className="banner demo-banner"><span>Read-only product demo · every site and metric on this screen is sample data.</span></div>}
       {sites.length ? (
         <section className="site-grid">
           {sites.map((site, index) => (
@@ -56,7 +56,7 @@ export function SitesView({ sites, isDemo }: { sites: SiteSummary[]; isDemo: boo
               <label className="prop-field"><span>Site name</span><input name="name" placeholder="Atlas Studio" required minLength={2} maxLength={80} /></label>
               <label className="prop-field"><span>Site type</span><select name="type" defaultValue="business"><option value="business">Business</option><option value="portfolio">Portfolio</option><option value="service">Service</option><option value="agency">Agency</option></select></label>
               {state.message && <p className={state.ok ? "form-success" : "form-error"}>{state.message}</p>}
-              <button className="app-button primary wide" disabled={pending || isDemo}>{pending ? "Creating…" : isDemo ? "Connect Supabase to create" : "Create site"}</button>
+              <button className="app-button primary wide" disabled={pending || isDemo}>{pending ? "Creating…" : isDemo ? "Unavailable in demo mode" : "Create site"}</button>
             </form>
           </section>
         </div>
@@ -72,7 +72,7 @@ export function PagesView({ siteId, siteName, pages, isDemo }: { siteId: string;
         <div><span className="eyebrow">Sites / {siteName}</span><h1>Pages</h1><p>Draft freely. Preview privately. Publish only when the version is ready.</p></div>
         <Link className="app-button" href="/app/sites">All sites</Link>
       </header>
-      {isDemo && <div className="banner demo-banner"><span>Interactive demo · changes remain local until Supabase is connected.</span></div>}
+      {isDemo && <div className="banner demo-banner"><span>Demo data · editor changes stay on the current screen and cannot be saved or published.</span></div>}
       <div className="page-list">
         {pages.map((page) => (
           <article className="page-row" key={page.id}>

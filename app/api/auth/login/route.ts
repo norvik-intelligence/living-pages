@@ -9,7 +9,7 @@ const schema = z.object({
 export async function POST(request: Request) {
   const parsed = schema.safeParse(Object.fromEntries(await request.formData()));
   if (!parsed.success) return NextResponse.redirect(new URL("/login?error=invalid-details", request.url), 303);
-  if (modes.auth === "unconfigured") return NextResponse.redirect(new URL("/login?error=not-configured", request.url), 303);
+  if (modes.auth !== "connected") return NextResponse.redirect(new URL(`/login?error=${modes.auth === "demo" ? "demo-active" : "not-configured"}`, request.url), 303);
   const client = await createClient();
   const { error } = await client.auth.signInWithPassword(parsed.data);
   if (error) return NextResponse.redirect(new URL("/login?error=invalid-credentials", request.url), 303);

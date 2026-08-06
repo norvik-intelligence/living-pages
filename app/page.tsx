@@ -6,6 +6,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { CheckItem, Footer, Header } from "@/components/marketing";
+import { modes } from "@/lib/config";
 const ecosystems = [
   {
     n: "01",
@@ -29,6 +30,7 @@ const ecosystems = [
   },
 ];
 export default function Home() {
+  const isDemo = modes.application === "demo";
   return (
     <>
       <Header />
@@ -46,8 +48,8 @@ export default function Home() {
               stays current, relevant and ready to convert.
             </p>
             <div className="hero-actions">
-              <Link className="button dark" href="/signup">
-                Start building free <ArrowRight size={16} />
+              <Link className="button dark" href={isDemo ? "/app" : "/signup"}>
+                {isDemo ? "Open dashboard demo" : "Start building free"} <ArrowRight size={16} />
               </Link>
               <Link className="button" href="/product">
                 See how it works
@@ -206,8 +208,8 @@ export default function Home() {
             <h2>
               Your next website should be the last one you rebuild from zero.
             </h2>
-            <Link className="button accent" href="/signup">
-              Start building <ArrowRight size={16} />
+            <Link className="button accent" href={isDemo ? "/app" : "/signup"}>
+              {isDemo ? "Explore the demo" : "Start building"} <ArrowRight size={16} />
             </Link>
           </div>
         </section>

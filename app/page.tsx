@@ -1,7 +1,9 @@
 import Link from "next/link";
 import {
   ArrowRight,
+  BadgeCheck,
   Database,
+  MousePointer2,
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
@@ -37,23 +39,27 @@ export default function Home() {
       <main id="content">
         <section className="hero">
           <div className="container">
-            <span className="eyebrow">The living web operating system</span>
+            <span className="hero-badge"><Sparkles size={14} /> A new standard for business websites</span>
             <h1>
-              Build once.
-              <br />
-              Stay alive.
+              A website that gets
+              <br /> better with your business.
             </h1>
             <p>
-              Connect your content, brand and business systems to a website that
-              stays current, relevant and ready to convert.
+              Design, content and publishing in one calm workspace. Living Pages
+              keeps every update on-brand—and you stay in control of what goes live.
             </p>
             <div className="hero-actions">
               <Link className="button dark" href={isDemo ? "/app" : "/signup"}>
-                {isDemo ? "Open dashboard demo" : "Start building free"} <ArrowRight size={16} />
+                {isDemo ? "Explore the live studio" : "Start building"} <ArrowRight size={16} />
               </Link>
               <Link className="button" href="/product">
-                See how it works
+                See the platform
               </Link>
+            </div>
+            <div className="hero-proof" aria-label="Platform principles">
+              <span><BadgeCheck size={16} /> Brand-governed</span>
+              <span><MousePointer2 size={16} /> No-code editing</span>
+              <span><ShieldCheck size={16} /> Human-approved publishing</span>
             </div>
             <div className="product-stage">
               <div className="browser">
@@ -62,10 +68,11 @@ export default function Home() {
                   <i />
                   <i />
                   <span className="browser-url">northstar.living.page</span>
+                  <span className="browser-status">Saved</span>
                 </div>
                 <div className="demo-canvas">
                   <aside className="demo-side">
-                    <div className="demo-label">Layers</div>
+                    <div className="demo-label">Page structure</div>
                     {[
                       "Navigation",
                       "Hero",
@@ -95,7 +102,7 @@ export default function Home() {
                     </span>
                   </div>
                   <aside className="demo-side right">
-                    <div className="demo-label">Brand controls</div>
+                    <div className="demo-label">Brand system</div>
                     <div className="control">Display · Geist</div>
                     <div className="control">Ink · #151814</div>
                     <div className="control">Accent · Living lime</div>
@@ -114,19 +121,19 @@ export default function Home() {
           <div className="container">
             <div className="section-head">
               <div>
-                <span className="eyebrow">One core. Four expressions.</span>
-                <h2>A system that grows with the business.</h2>
+                <span className="eyebrow">One foundation</span>
+                <h2>Start focused. Expand without starting over.</h2>
               </div>
               <p>
                 Start with a site. Extend it into a portfolio, commerce engine
-                or governed enterprise platform—without rebuilding the
-                foundation.
+                or governed enterprise platform while the brand, content and
+                publishing foundation stays intact.
               </p>
             </div>
             <div className="grid-4">
               {ecosystems.map((e, i) => (
                 <article
-                  className={`card ${i === 1 ? "dark" : i === 2 ? "accent" : ""}`}
+                  className={`card ecosystem-card ecosystem-${i + 1}`}
                   key={e.t}
                 >
                   <span className="num">{e.n}</span>
@@ -141,8 +148,8 @@ export default function Home() {
           <div className="container">
             <div className="compare">
               <div>
-                <span className="eyebrow">Static website</span>
-                <h3>Published, then forgotten.</h3>
+                <span className="eyebrow">The old workflow</span>
+                <h3>Every small update becomes a project.</h3>
                 <ul>
                   <CheckItem>Content drifts out of date</CheckItem>
                   <CheckItem>Brand consistency erodes</CheckItem>
@@ -151,8 +158,8 @@ export default function Home() {
                 </ul>
               </div>
               <div>
-                <span className="eyebrow">Living Page</span>
-                <h3>Connected, controlled, current.</h3>
+                <span className="eyebrow">Living Pages</span>
+                <h3>One clear system from idea to live page.</h3>
                 <ul>
                   <CheckItem>Sources keep knowledge flowing</CheckItem>
                   <CheckItem>Brand rules constrain every output</CheckItem>
@@ -167,30 +174,30 @@ export default function Home() {
           <div className="container">
             <div className="section-head">
               <div>
-                <span className="eyebrow">The control loop</span>
-                <h2>Alive does not mean autonomous.</h2>
+                <span className="eyebrow">Simple by design</span>
+                <h2>Powerful underneath. Obvious on the surface.</h2>
               </div>
               <p>
-                Living Pages separates intelligence from authority. The system
-                finds opportunities. Your team keeps editorial control.
+                The platform handles structure, consistency and change history.
+                Your team sees one clear next step and keeps editorial control.
               </p>
             </div>
             <div className="grid-3">
               {[
                 {
                   I: Database,
-                  t: "Connect sources",
-                  d: "Bring RSS, structured imports and business knowledge into one governed content layer.",
+                  t: "Bring everything together",
+                  d: "Organize trusted content, business knowledge and brand rules in one shared foundation.",
                 },
                 {
                   I: Sparkles,
-                  t: "Generate suggestions",
-                  d: "AI works inside your voice, terminology and component rules—not outside them.",
+                  t: "Work with a guided system",
+                  d: "Get useful suggestions inside your voice, terminology and approved design components.",
                 },
                 {
                   I: ShieldCheck,
-                  t: "Review and publish",
-                  d: "Every change has status, provenance, approval and a recoverable published version.",
+                  t: "Publish with confidence",
+                  d: "Review every change, understand its status and restore an earlier version whenever needed.",
                 },
               ].map(({ I, t, d }) => (
                 <article className="card" key={t}>
@@ -204,12 +211,13 @@ export default function Home() {
         </section>
         <section className="section">
           <div className="container final-cta">
-            <span className="eyebrow">Ready when you are</span>
+            <span className="eyebrow">See it in action</span>
             <h2>
-              Your next website should be the last one you rebuild from zero.
+              Your website should feel as considered as the business behind it.
             </h2>
+            <p>Explore the complete workspace with safe sample data. No account required.</p>
             <Link className="button accent" href={isDemo ? "/app" : "/signup"}>
-              {isDemo ? "Explore the demo" : "Start building"} <ArrowRight size={16} />
+              {isDemo ? "Open the interactive demo" : "Start building"} <ArrowRight size={16} />
             </Link>
           </div>
         </section>

@@ -1,32 +1,127 @@
 import Link from "next/link";
-import { ArrowRight, Check, FileText, Globe2, Palette, Plus, RefreshCw, Upload } from "lucide-react";
-import { getSites, getWorkspaceContext } from "@/lib/core/data";
-
-const demoHealth = [["Freshness",84],["Brand consistency",72],["SEO",68],["Accessibility",91],["Performance",88],["Content completeness",61]] as const;
+import {
+  ArrowRight,
+  Check,
+  ChevronRight,
+  Eye,
+  FileText,
+  Globe2,
+  Palette,
+  PenLine,
+  Sparkles,
+} from "lucide-react";
+import { getPages, getSites, getWorkspaceContext } from "@/lib/core/data";
 
 export default async function Dashboard() {
   const context = await getWorkspaceContext();
   const sites = await getSites();
-  const pageCount = sites.reduce((sum, site) => sum + site.pages, 0);
+  const site = sites[0];
+  const pages = site ? await getPages(site.id) : [];
+  const firstPage = pages[0];
+  const pageCount = sites.reduce((sum, item) => sum + item.pages, 0);
   const isDemo = context.mode === "demo";
+  const websiteHref = site ? `/app/sites/${site.id}/pages` : "/app/sites";
+  const editorHref = firstPage ? `/app/sites/${site?.id}/pages/${firstPage.id}/editor` : websiteHref;
+  const nextSteps = [
+    { icon: PenLine, title: "Shape your homepage", text: "Edit the message visitors see first.", href: editorHref, action: "Open editor" },
+    { icon: Palette, title: "Make it feel like you", text: "Set colors, type and writing style once.", href: "/app/brand", action: "Review brand" },
+    { icon: FileText, title: "Add useful content", text: "Create services, stories and answers in one place.", href: "/app/content", action: "Open content" },
+  ] as const;
+
   return (
-    <main className="workspace-main" id="content">
-      {isDemo && <div className="banner demo-banner"><span><i className="draft-dot" /> Demo workspace · metrics and activity below are clearly staged.</span><Link href="/app/settings">Configuration</Link></div>}
-      <header className="workspace-head launch-head">
-        <div><span className="eyebrow">Living control room</span><h1>{isDemo ? `Good evening, ${context.user.name}.` : `Welcome back, ${context.user.name}.`}</h1><p>{isDemo ? "Explore the complete governed publishing workflow." : "Your persisted sites and pages are ready for deliberate publishing."}</p></div>
-        <div className="actions"><Link className="app-button" href="/app/content"><FileText size={14} /> Content</Link><Link className="app-button primary" href="/app/sites"><Plus size={14} /> {isDemo ? "Explore demo site" : "New site"}</Link></div>
+    <main className="workspace-main dashboard-home" id="content">
+      {isDemo && (
+        <div className="demo-strip" role="status">
+          <span><Sparkles size={16} /> You are exploring with sample content. Nothing here affects a real website.</span>
+          <Link href="/app/settings">How demo mode works <ArrowRight size={14} /></Link>
+        </div>
+      )}
+
+      <header className="dashboard-welcome">
+        <div>
+          <span className="eyebrow">Your workspace</span>
+          <h1>Your website, in one clear view.</h1>
+          <p>Continue where you left off or choose one simple next step.</p>
+        </div>
+        <div className="welcome-actions">
+          <Link className="app-button" href={site ? `/p/${site.slug}` : "/app/sites"}><Eye size={17} /> Preview</Link>
+          <Link className="app-button primary" href={editorHref}><PenLine size={17} /> Edit website</Link>
+        </div>
       </header>
-      <section className="metric-grid">
-        <div className="metric"><span>Sites</span><b>{sites.length}</b><small>{isDemo ? "Staged workspace" : "Persisted in this workspace"}</small></div>
-        <div className="metric"><span>Pages</span><b>{pageCount}</b><small>Across active sites</small></div>
-        <div className="metric"><span>Production mode</span><b className="metric-word">{isDemo ? "Demo" : "Connected"}</b><small>{isDemo ? "No fake writes" : "RLS protected"}</small></div>
-        <div className="metric"><span>Publishing rule</span><b className="metric-word">Approval</b><small>Required before every release</small></div>
+
+      <section className="dashboard-focus" aria-label="Website overview">
+        <article className="continue-card">
+          <div className="site-visual" aria-hidden="true">
+            <div className="mini-browser-bar"><i /><i /><i /></div>
+            <div className="mini-site">
+              <span>NORTHSTAR</span>
+              <strong>Strategy that moves brands forward.</strong>
+              <i />
+            </div>
+          </div>
+          <div className="continue-copy">
+            <span className="status draft"><i /> Draft preview</span>
+            <p className="card-kicker">Continue working</p>
+            <h2>{site?.name || "Your first website"}</h2>
+            <p>{pageCount} pages · Last demo update today</p>
+            <Link className="text-action" href={websiteHref}>Manage website <ArrowRight size={16} /></Link>
+          </div>
+        </article>
+
+        <aside className="setup-card">
+          <div className="setup-top">
+            <div><span className="card-kicker">Website setup</span><h2>Almost ready to share</h2></div>
+            <strong>60%</strong>
+          </div>
+          <div className="setup-progress" aria-label="Website setup 60 percent complete"><i /></div>
+          <ul>
+            <li className="done"><Check size={15} /> Homepage created</li>
+            <li className="done"><Check size={15} /> Brand basics added</li>
+            <li><span>3</span> Review mobile layout <ChevronRight size={15} /></li>
+            <li><span>4</span> Connect your domain <ChevronRight size={15} /></li>
+          </ul>
+        </aside>
       </section>
-      <section className="dashboard-grid">
-        {isDemo ? <div className="panel"><div className="panel-head"><h2>Demonstration site health</h2><span className="mode-badge">Rule-based demo</span></div>{demoHealth.map(([name,value]) => <div className="health-row" key={name}><span>{name}</span><div className="bar"><i style={{width:`${value}%`}} /></div><b>{value}</b></div>)}</div> : <div className="panel operational-panel"><span className="eyebrow">Operational core</span><h2>From draft to a recoverable public version.</h2><p>Every edit is tenant-scoped, schema-validated and saved separately from the version currently serving visitors.</p><Link className="app-button primary" href="/app/sites">Open publishing system <ArrowRight size={12} /></Link></div>}
-        <div className="panel"><div className="panel-head"><h2>Launch sequence</h2><span>{isDemo ? "2 of 5" : `${Math.min(3, sites.length ? 3 : 1)} of 5`}</span></div>{[["Workspace protected",true],["Create first site",sites.length>0],["Edit structured page",pageCount>0],["Publish immutable version",sites.some((site)=>site.status==="published")],["Connect primary domain",false]].map(([name,done]) => <div className={`check-row ${done ? "done" : ""}`} key={String(name)}><span className="check-circle">{done && <Check size={11} />}</span><span>{name}</span><ArrowRight size={12} /></div>)}</div>
-        {isDemo && <><div className="panel"><div className="panel-head"><h2>Staged activity</h2><span className="mode-badge">Demo</span></div>{[[Upload,"Homepage published","2 hours ago"],[Palette,"Brand colors updated","Yesterday"],[RefreshCw,"RSS source checked","2 days ago"]].map(([Icon,name,time],index) => { const ItemIcon=Icon as typeof Upload; return <div className="activity-row" key={index}><div className="iconbox"><ItemIcon size={14}/></div><span>{String(name)}<small>{String(time)}</small></span></div>; })}</div><div className="panel"><div className="panel-head"><h2>Governance signals</h2><span>3 rules</span></div>{["No autonomous publishing","No arbitrary HTML or JavaScript","Every live version is recoverable"].map((name)=><div className="activity-row" key={name}><div className="iconbox"><Globe2 size={14}/></div><span>{name}<small>Enforced in the Pages core</small></span></div>)}</div></>}
+
+      <section className="next-section">
+        <div className="section-title-row">
+          <div><span className="eyebrow">Suggested next</span><h2>What would you like to do?</h2></div>
+          <Link href="/app/sites">See everything <ArrowRight size={15} /></Link>
+        </div>
+        <div className="next-grid">
+          {nextSteps.map(({ icon: Icon, title, text, href, action }) => (
+            <Link className="next-card" href={href} key={title}>
+              <span className="next-icon"><Icon size={21} /></span>
+              <span><strong>{title}</strong><small>{text}</small></span>
+              <span className="next-action">{action} <ArrowRight size={15} /></span>
+            </Link>
+          ))}
+        </div>
       </section>
+
+      {isDemo ? <section className="dashboard-lower">
+        <article className="simple-panel">
+          <div className="panel-head"><div><span className="card-kicker">At a glance</span><h2>Website health</h2></div><span className="health-score">Good</span></div>
+          <div className="health-summary">
+            <div><strong>88</strong><span>Overall score</span></div>
+            <ul>
+              <li><Check size={15} /> Easy to use on mobile</li>
+              <li><Check size={15} /> Strong accessibility</li>
+              <li><Globe2 size={15} /> SEO needs a little attention</li>
+            </ul>
+          </div>
+          <Link className="text-action" href="/app/analytics">See full report <ArrowRight size={15} /></Link>
+        </article>
+        <article className="simple-panel activity-panel">
+          <div className="panel-head"><div><span className="card-kicker">Latest changes</span><h2>Recent activity</h2></div></div>
+          <div className="timeline-row"><span className="timeline-icon"><Globe2 size={16} /></span><p><b>Homepage published</b><small>Today at 10:42</small></p></div>
+          <div className="timeline-row"><span className="timeline-icon"><Palette size={16} /></span><p><b>Brand colors updated</b><small>Yesterday</small></p></div>
+          <div className="timeline-row"><span className="timeline-icon"><FileText size={16} /></span><p><b>New service draft added</b><small>2 days ago</small></p></div>
+        </article>
+      </section> : <section className="simple-panel connected-summary">
+        <div><span className="card-kicker">Connected workspace</span><h2>Insights appear after your first published visit.</h2><p>Living Pages records real events only. It never fills a production dashboard with sample traffic.</p></div>
+        <Link className="app-button" href="/app/analytics">Open insights <ArrowRight size={15} /></Link>
+      </section>}
     </main>
   );
 }

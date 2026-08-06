@@ -35,7 +35,7 @@ export function Editor({ page, isDemo }: { page: EditorPage; isDemo: boolean }) 
   const [metaDescription, setMetaDescription] = useState(page.metaDescription);
   const [expectedUpdatedAt, setExpectedUpdatedAt] = useState(page.updatedAt);
   const [viewport, setViewport] = useState<"desktop" | "mobile">("desktop");
-  const [result, setResult] = useState<ActionResult>({ ok: true, message: isDemo ? "Demo edits are local" : "All changes saved" });
+  const [result, setResult] = useState<ActionResult>({ ok: true, message: isDemo ? "Demo edits stay on this screen" : "All changes saved" });
   const [pending, startTransition] = useTransition();
   const selected = useMemo(() => history.blocks.find((block) => block.id === selectedId), [history.blocks, selectedId]);
   const dirty = history.past.length > 0 || metaTitle !== page.metaTitle || metaDescription !== page.metaDescription;
@@ -89,6 +89,7 @@ export function Editor({ page, isDemo }: { page: EditorPage; isDemo: boolean }) 
       </aside>
 
       <section className="editor-canvas-wrap">
+        {isDemo && <div className="editor-demo-notice" role="status">Demo mode · editing is interactive, but save and publish are disabled.</div>}
         <header className="editor-toolbar">
           <div className="editor-doc-title"><span className={dirty ? "dirty-dot" : "saved-dot"} /><b>{page.name}</b><small>{result.message}</small></div>
           <div className="toolbar-cluster">
@@ -101,8 +102,8 @@ export function Editor({ page, isDemo }: { page: EditorPage; isDemo: boolean }) 
           </div>
           <div className="toolbar-actions">
             <Link className="app-button" href={`/app/sites/${page.siteId}/pages/${page.id}/preview`}><Eye size={13} /> Preview</Link>
-            <button className="app-button" disabled={pending || !dirty} onClick={() => run("save")}><Save size={13} /> {pending ? "Working…" : "Save"}</button>
-            <button className="app-button publish-action" disabled={pending} onClick={() => run("publish")}><Rocket size={13} /> Publish</button>
+            <button className="app-button" disabled={isDemo || pending || !dirty} onClick={() => run("save")} title={isDemo ? "Saving is disabled in demo mode" : undefined}><Save size={13} /> {pending ? "Working…" : "Save"}</button>
+            <button className="app-button publish-action" disabled={isDemo || pending} onClick={() => run("publish")} title={isDemo ? "Publishing is disabled in demo mode" : undefined}><Rocket size={13} /> Publish</button>
           </div>
         </header>
         {!result.ok && <div className="editor-error" role="alert">{result.message}</div>}

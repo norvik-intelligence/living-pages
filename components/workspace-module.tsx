@@ -126,6 +126,11 @@ export function WorkspaceModule({ slug, mode = "demo" }: { slug: string; mode?: 
           <button onClick={() => setNotice("")}>Dismiss</button>
         </div>
       )}
+      {mode === "demo" && (
+        <div className="banner demo-banner">
+          <span><ShieldCheck size={14} /> Read-only demo · all records, balances and activity on this screen are samples.</span>
+        </div>
+      )}
       {mode === "connected" ? (
         <Empty
           icon={<ShieldCheck />}

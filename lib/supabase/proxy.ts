@@ -1,9 +1,22 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import { config } from "@/lib/config";
+import { config, modes } from "@/lib/config";
 export async function updateSession(request: NextRequest) {
-  if (!config.supabase.url || !config.supabase.key)
+  if (modes.application === "demo") {
     return NextResponse.next({ request });
+  }
+  const guarded =
+    request.nextUrl.pathname.startsWith("/app") ||
+    request.nextUrl.pathname.startsWith("/onboarding");
+  if (modes.auth !== "connected" || !config.supabase.url || !config.supabase.key) {
+    if (guarded) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/login";
+      url.searchParams.set("error", "not-configured");
+      return NextResponse.redirect(url);
+    }
+    return NextResponse.next({ request });
+  }
   let response = NextResponse.next({ request });
   const client = createServerClient(config.supabase.url, config.supabase.key, {
     cookies: {
@@ -18,9 +31,6 @@ export async function updateSession(request: NextRequest) {
     },
   });
   const { data } = await client.auth.getClaims();
-  const guarded =
-    request.nextUrl.pathname.startsWith("/app") ||
-    request.nextUrl.pathname.startsWith("/onboarding");
   if (guarded && !data?.claims) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";

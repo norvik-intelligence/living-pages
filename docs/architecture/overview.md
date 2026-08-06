@@ -3,3 +3,5 @@
 Living Pages is a modular Next.js monolith. The App Router owns marketing, authentication, workspace and route handlers; `lib/` owns business rules and provider boundaries; Supabase owns durable tenant data, auth and storage after configuration.
 
 Publishing uses drafts, immutable version snapshots and a selected published version. Editors manipulate validated blocks rather than HTML. Save requests carry the last observed `updated_at` value so concurrent edits fail closed instead of overwriting another session. External AI, billing and email services sit behind adapters and declare their operating mode. Workspace membership plus server authorization plus RLS form the authorization boundary.
+
+Application access is an explicit server-owned mode. `demo` serves only the bundled Northstar workspace, bypasses external auth and denies every persistent mutation. `connected` enables Supabase auth and tenant data only when its public provider configuration is present. Provider availability alone never upgrades a deployment out of demo mode.

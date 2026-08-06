@@ -14,7 +14,7 @@ export default async function Dashboard() {
       {isDemo && <div className="banner demo-banner"><span><i className="draft-dot" /> Demo workspace · metrics and activity below are clearly staged.</span><Link href="/app/settings">Configuration</Link></div>}
       <header className="workspace-head launch-head">
         <div><span className="eyebrow">Living control room</span><h1>{isDemo ? `Good evening, ${context.user.name}.` : `Welcome back, ${context.user.name}.`}</h1><p>{isDemo ? "Explore the complete governed publishing workflow." : "Your persisted sites and pages are ready for deliberate publishing."}</p></div>
-        <div className="actions"><Link className="app-button" href="/app/content"><FileText size={14} /> Content</Link><Link className="app-button primary" href="/app/sites"><Plus size={14} /> New site</Link></div>
+        <div className="actions"><Link className="app-button" href="/app/content"><FileText size={14} /> Content</Link><Link className="app-button primary" href="/app/sites"><Plus size={14} /> {isDemo ? "Explore demo site" : "New site"}</Link></div>
       </header>
       <section className="metric-grid">
         <div className="metric"><span>Sites</span><b>{sites.length}</b><small>{isDemo ? "Staged workspace" : "Persisted in this workspace"}</small></div>

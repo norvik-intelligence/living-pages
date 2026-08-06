@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { ArrowRight, Check, Menu } from "lucide-react";
+import { modes } from "@/lib/config";
 import { Logo } from "./logo";
 export function Header() {
+  const isDemo = modes.application === "demo";
   return (
     <header className="site-header">
       <div className="container nav">
@@ -13,9 +15,9 @@ export function Header() {
           <Link href="/resources">Resources</Link>
         </nav>
         <div className="nav-actions">
-          <Link href="/login">Log in</Link>
-          <Link className="button dark small" href="/signup">
-            Start building <ArrowRight size={14} />
+          <Link href={isDemo ? "/product" : "/login"}>{isDemo ? "View product" : "Log in"}</Link>
+          <Link className="button dark small" href={isDemo ? "/app" : "/signup"}>
+            {isDemo ? "Open demo" : "Start building"} <ArrowRight size={14} />
           </Link>
         </div>
         <button className="mobile-menu" aria-label="Open menu">
